@@ -16,8 +16,12 @@ def compute_ra_dec_iteratively(
         observation_run_length,
 ):
 
-    subarray = SubarrayDescription.from_hdf(path='pSCT_FLWO_subarray.h5')
-    focal_length = subarray.tel[1].optics.equivalent_focal_length
+    # subarray = SubarrayDescription.from_hdf(path='pSCT_FLWO_subarray.h5')
+    # focal_length = subarray.tel[1].optics.equivalent_focal_length
+
+    # hard coding focal length 
+    # this avoids having to read subarray file
+    focal_length = 5.586299896240234*u.m 
 
     obstime_start = Time(observation_time)
     obstime = obstime_start + observation_run_length / 2
