@@ -192,8 +192,12 @@ def compute_ra_dec_iteratively(
     source_coord_altaz = source_coord.transform_to(altaz)
     
     # coordinates below corresponds to center of top middle sector
-    camx_target = 0.0 * u.m
-    camy_target = 0.27 * u.m
+    # camx_target = 0.0 * u.m
+    # camy_target = 0.27 * u.m
+    
+    # coordintes below correspond to populated sector 7 centroid
+    camx_target = -0.007363659090909092 * u.m
+    camy_target = 0.2847272727272727 * u.m
 
     # define sky coord corresponding to top middle sector center
     # where camera frame origin is centered at the source
