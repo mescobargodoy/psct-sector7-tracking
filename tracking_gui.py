@@ -12,6 +12,44 @@ from tracking_math import (
     coord_to_table_strings,
 )
 
+from datetime import datetime
+
+# ------------------------------------------------------------------
+# Log helper functions
+# ------------------------------------------------------------------
+
+def write_log(
+    observation_time,
+    duration,
+    source_name,
+    manual_input_used,
+    manual_inputs,
+    source_coord,
+    tracking_coord
+):
+    log_file = "tracking_tools_log.txt"
+
+    timestamp = datetime.utcnow().isoformat()
+
+    with open(log_file, "a") as f:
+        f.write("=" * 50 + "\n")
+        f.write(f"Log Time (UTC): {timestamp}\n")
+        f.write(f"Run Start (UTC): {observation_time}\n")
+        f.write(f"Run Length (min): {duration.value}\n\n")
+
+        f.write(f"Source Selected: {source_name}\n")
+        f.write(f"Manual Input Used: {manual_input_used}\n")
+
+        if manual_input_used:
+            f.write(f"Manual Inputs: {manual_inputs}\n")
+
+        f.write("\nSource Coordinates:\n")
+        f.write(source_coord.to_string("hmsdms") + "\n")
+
+        f.write("\nTracking Coordinates:\n")
+        f.write(tracking_coord.to_string("hmsdms") + "\n")
+
+        f.write("\n")
 
 # ------------------------------------------------------------------
 # GUI helper functions
@@ -86,6 +124,37 @@ def run_calculation():
             observation_time=observation_time,
             observation_run_length=duration,
             source_coord=source_coord,
+        )
+        
+       # Determine if manual input was used
+        manual_input_used = source_coord is not None and (
+            ra_deg_entry.get().strip() != "" or
+            dec_deg_entry.get().strip() != "" or
+            ra_h_entry.get().strip() != ""
+        )
+
+        source_name = source_var.get().strip().lower()
+
+        manual_inputs = {
+            "ra_deg": ra_deg_entry.get(),
+            "dec_deg": dec_deg_entry.get(),
+            "ra_h": ra_h_entry.get(),
+            "ra_m": ra_m_entry.get(),
+            "ra_s": ra_s_entry.get(),
+            "dec_d": dec_d_entry.get(),
+            "dec_m": dec_m_entry.get(),
+            "dec_s": dec_s_entry.get(),
+        }
+
+        # Write log
+        write_log(
+            observation_time=observation_time,
+            duration=duration,
+            source_name=source_name,
+            manual_input_used=manual_input_used,
+            manual_inputs=manual_inputs,
+            source_coord=source_coord,
+            tracking_coord=tracking_coord,
         )
 
         # Fill tracking table
