@@ -196,9 +196,15 @@ def compute_ra_dec_iteratively(
     # camy_target = 0.27 * u.m
     
     # coordintes below correspond to populated sector 7 centroid
-    camx_target = -0.007363659090909092 * u.m
-    camy_target = 0.2847272727272727 * u.m
+    # camx_target = -0.007363659090909092 * u.m
+    # camy_target = 0.2847272727272727 * u.m
 
+    # coordintes below correspond to populated sector 7 centroid
+    # with a negative (clockwise) 90 degree rotation
+    # we see this is what matches the actual pSCT camera coordinates
+    camx_target = -0.2847272727272727 * u.m
+    camy_target = -0.007363659090909092 * u.m
+    
     # define sky coord corresponding to top middle sector center
     # where camera frame origin is centered at the source
     source_coord_in_camera = SkyCoord(
@@ -230,7 +236,7 @@ def compute_ra_dec_iteratively(
             unit="deg",
             frame="icrs"
         )
-
+        
         altaz_point = corrected.transform_to(altaz)
 
         cam_frame = CameraFrame(
