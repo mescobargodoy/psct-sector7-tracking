@@ -147,6 +147,7 @@ def compute_ra_dec_iteratively(
     observation_time,
     observation_run_length,
     source_coord,
+    delta_elevation=2.68*u.deg,
 ):
     """
     Compute required telescope pointing (ICRS) such that the source lands
@@ -190,76 +191,12 @@ def compute_ra_dec_iteratively(
     
     # transform source RA and Dec to alt/az
     source_coord_altaz = source_coord.transform_to(altaz)
-    
-    # coordinates below corresponds to center of top middle sector
-    # camx_target = 0.0 * u.m
-    # camy_target = 0.27 * u.m
-    
-    # coordintes below correspond to populated sector 7 centroid
-    # camx_target = -0.007363659090909092 * u.m
-    # camy_target = 0.2847272727272727 * u.m
-
-    # coordintes below correspond to populated sector 7 centroid
-    # with a negative (clockwise) 90 degree rotation
-    # we see this is what matches the actual pSCT camera coordinates
-    camx_target = -0.2847272727272727 * u.m
-    camy_target = -0.007363659090909092 * u.m
-    
-    # define sky coord corresponding to top middle sector center
-    # where camera frame origin is centered at the source
-    source_coord_in_camera = SkyCoord(
-        x=camx_target,
-        y=camy_target,
-        frame=CameraFrame(
-            focal_length=focal_length,
-            telescope_pointing=source_coord_altaz
-        )
-    )
-    
-    # convert coord to alt/az and then to RA/Dec
-    required_pointing_altaz = source_coord_in_camera.transform_to(altaz)
-    required_pointing_radec = required_pointing_altaz.transform_to("icrs")
-    
-    # At this point the source camera coordinates should in principle correspond to
-    # the top middle sector center but it is not quite there yet. There is a small
-    # delta in x,y which maybe comes from rotations between coordinates.
-    # To get to the actual center we now compute this iteratively by adding
-    # a correction to the RA/Dec
-    deltara = 0.0
-    deltadec = 0.0
-
-    for _ in range(1500):
-        # apply small correction iteratively to tracking coords
-        corrected = SkyCoord(
-            ra=required_pointing_radec.ra.value + deltara,
-            dec=required_pointing_radec.dec.value + deltadec,
-            unit="deg",
-            frame="icrs"
-        )
-        
-        altaz_point = corrected.transform_to(altaz)
-
-        cam_frame = CameraFrame(
-            telescope_pointing=altaz_point,
-            focal_length=focal_length,
-            obstime=obstime,
-            location=location,
-        )
-
-        source_cam = source_coord.transform_to(cam_frame)
-        
-        # assess tracking coordinates by comparing to target 
-        # x,y values in camera frame
-        dx = camx_target - source_cam.x
-        dy = camy_target - source_cam.y
-        
-        # If tolerance reached return coordinate
-        # tolerance value was arbitrarily chosen
-        if (dx**2 + dy**2)**0.5 < 1e-8 * u.m:
-            return corrected
-
-        # calculate small correction to RA and Dec
-        deltara += (-dx / focal_length).value * 180 / math.pi
-        deltadec += (-dy / focal_length).value * 180 / math.pi
-
-    raise RuntimeError("Did not converge")
+   
+    # apply elevation offset
+    # this should place source near sector 7
+    new_alt = source_coord_altaz.alt + delta_elevation
+    new_az = source_coord_altaz.az
+    new_altaz = SkyCoord(alt=new_alt, az=new_az, frame=altaz)
+    new_radec = new_altaz.transform_to('icrs')
+   
+    return new_radec

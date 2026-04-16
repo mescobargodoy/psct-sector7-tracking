@@ -123,6 +123,17 @@ def ask_run_length():
         except ValueError:
             print("Please enter a valid number.")
 
+def ask_delta_elevation():
+    print("\nEnter delta elevation in degrees.")
+    while True:
+        value = input("Delta Elevation (deg) [default 2.7]: ").strip()
+        if value == "":
+            return 2.7 * u.deg
+        try:
+            return float(value) * u.deg
+        except ValueError:
+            print("Please enter a valid number.")
+
 
 def print_coord_box(title, coord):
     parts = coord_to_table_strings(coord)
@@ -156,6 +167,7 @@ def main():
 
         observation_time = ask_observation_time()
         duration = ask_run_length()
+        delta_elevation = ask_delta_elevation()
 
         print("\nComputing pointing...")
 
@@ -163,6 +175,7 @@ def main():
             observation_time=observation_time,
             observation_run_length=duration,
             source_coord=source_coord,
+            delta_elevation=delta_elevation,
         )
 
         print_coord_box("Tracking Coordinates", tracking_coord)
