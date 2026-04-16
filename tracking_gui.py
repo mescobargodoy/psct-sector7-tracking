@@ -37,7 +37,7 @@ def write_log(
         f.write(f"Log Time (UTC): {timestamp}\n")
         f.write(f"Run Start (UTC): {observation_time}\n")
         f.write(f"Run Length (min): {duration.value}\n")
-        f.write(f"Delta Elevation (deg): {delta_elevation.value}\n\n")
+        f.write(f"Elevation Offset (deg): {delta_elevation.value}\n\n")
 
 
         f.write(f"Source Selected: {source_name}\n")
@@ -47,9 +47,11 @@ def write_log(
             f.write(f"Manual Inputs: {manual_inputs}\n")
 
         f.write("\nSource Coordinates:\n")
+        f.write("RA (hms) \t\t Dec (dms) \n")
         f.write(source_coord.to_string("hmsdms") + "\n")
 
         f.write("\nTracking Coordinates:\n")
+        f.write("RA (hms) \t\t Dec (dms)\n")
         f.write(tracking_coord.to_string("hmsdms") + "\n")
 
         f.write("\n")

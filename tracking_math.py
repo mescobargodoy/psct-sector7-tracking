@@ -176,18 +176,24 @@ def compute_ra_dec_iteratively(
     # Code defines observation start as input + run length /2
     # The idea is to compute the RA, Dec such that at the 
     # middle of the run the source is exactly at sector 7
-    obstime = obstime_start + observation_run_length / 2
+    obstime = obstime_start # + observation_run_length / 2
     
     # The coordinates below correspond to the FLWO site where the pSCT is located.
     # Extracted from google maps.
     location = EarthLocation(
-        lat=31.674743 * u.deg,
-        lon=-110.952792 * u.deg,
-        height=1270 * u.m
+        lat=31.674997676 * u.deg,
+        lon=-110.9521311 * u.deg,
+        height=1286 * u.m
     )
 
     # initialize Alt Az frame
-    altaz = AltAz(location=location, obstime=obstime)
+    altaz = AltAz(
+            location=location, 
+            obstime=obstime, 
+            pressure=1020.0*u.hPa,
+            relative_humidity=0.2,
+            temperature=20*u.deg_C
+    )
     
     # transform source RA and Dec to alt/az
     source_coord_altaz = source_coord.transform_to(altaz)

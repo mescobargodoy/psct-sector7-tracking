@@ -126,9 +126,9 @@ def ask_run_length():
 def ask_delta_elevation():
     print("\nEnter delta elevation in degrees.")
     while True:
-        value = input("Delta Elevation (deg) [default 2.7]: ").strip()
+        value = input("Delta Elevation (deg) [default 2.68]: ").strip()
         if value == "":
-            return 2.7 * u.deg
+            return 2.68 * u.deg
         try:
             return float(value) * u.deg
         except ValueError:
