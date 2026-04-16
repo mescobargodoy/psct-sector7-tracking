@@ -21,6 +21,7 @@ from datetime import datetime
 def write_log(
     observation_time,
     duration,
+    delta_elevation,
     source_name,
     manual_input_used,
     manual_inputs,
@@ -35,7 +36,9 @@ def write_log(
         f.write("=" * 50 + "\n")
         f.write(f"Log Time (UTC): {timestamp}\n")
         f.write(f"Run Start (UTC): {observation_time}\n")
-        f.write(f"Run Length (min): {duration.value}\n\n")
+        f.write(f"Run Length (min): {duration.value}\n")
+        f.write(f"Elevation Offset (deg): {delta_elevation.value}\n\n")
+
 
         f.write(f"Source Selected: {source_name}\n")
         f.write(f"Manual Input Used: {manual_input_used}\n")
@@ -44,9 +47,11 @@ def write_log(
             f.write(f"Manual Inputs: {manual_inputs}\n")
 
         f.write("\nSource Coordinates:\n")
+        f.write("RA (hms) \t\t Dec (dms) \n")
         f.write(source_coord.to_string("hmsdms") + "\n")
 
         f.write("\nTracking Coordinates:\n")
+        f.write("RA (hms) \t\t Dec (dms)\n")
         f.write(tracking_coord.to_string("hmsdms") + "\n")
 
         f.write("\n")
@@ -103,6 +108,7 @@ def run_calculation():
 
     try:
         duration = float(duration_entry.get().strip()) * u.min
+        delta_elevation = float(delta_elevation_entry.get().strip()) * u.deg
         time_str = time_entry.get().strip()
 
         utc_date = Time.now().utc.isot.split("T")[0]
@@ -124,6 +130,7 @@ def run_calculation():
             observation_time=observation_time,
             observation_run_length=duration,
             source_coord=source_coord,
+            delta_elevation=delta_elevation,
         )
         
        # Determine if manual input was used
@@ -150,6 +157,7 @@ def run_calculation():
         write_log(
             observation_time=observation_time,
             duration=duration,
+            delta_elevation=delta_elevation,
             source_name=source_name,
             manual_input_used=manual_input_used,
             manual_inputs=manual_inputs,
@@ -309,6 +317,16 @@ ttk.Label(frame, text="Run Length (min)", font=font).grid(
 duration_entry = ttk.Entry(frame, width=14)
 duration_entry.insert(0, "20")
 duration_entry.grid(row=current_row, column=2, sticky="w", pady=(8, 0))
+current_row += 1
+
+# Delta elevation
+ttk.Label(frame, text="Delta Elevation (deg)", font=font).grid(
+    row=current_row, column=0, columnspan=2, sticky="w", pady=(8, 0)
+)
+
+delta_elevation_entry = ttk.Entry(frame, width=14)
+delta_elevation_entry.insert(0, "2.68")
+delta_elevation_entry.grid(row=current_row, column=2, sticky="w", pady=(8, 0))
 current_row += 1
 
 # Extra vertical space before button
