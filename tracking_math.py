@@ -4,10 +4,6 @@ import astropy.units as u
 from astropy.coordinates import AltAz, EarthLocation, SkyCoord
 from astropy.time import Time
 
-from ctapipe.coordinates import CameraFrame
-from ctapipe.instrument import SubarrayDescription
-
-
 # ------------------------------------------------------------------
 # Hard-coded source database (ICRS, degrees)
 # Extracted from VERITAS database
